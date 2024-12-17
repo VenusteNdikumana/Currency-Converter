@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: black;
+            color:white;
+        }
+        .converter-container {
+            background: #936969;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            max-width: 400px;
+            margin: auto;
+        }
+        input, select, button {
+            margin: 10px;
+            padding: 10px;
+            width: 80%;
+            font-size: 1rem;
+        }
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Currency Converter</h1>
+    <div class="converter-container">
+        <input type="number" id="amount" placeholder="Enter amount" />
+        <select id="fromCurrency">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="RWF">RWF</option>
+        </select>
+        to
+        <select id="toCurrency">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="RWF">RWF</option>
+        </select>
+        <button onclick="convertCurrency()">Convert</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        async function convertCurrency() {
+            const amount = document.getElementById('amount').value;
+            const fromCurrency = document.getElementById('fromCurrency').value;
+            const toCurrency = document.getElementById('toCurrency').value;
+
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount!');
+                return;
+            }
+
+            try {
+                const apiKey = '32877d70cc14ca243905ed28';
+                const response = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/latest/${fromCurrency}`);
+                const data = await response.json();
+
+                if (data.result === "success") {
+                    const rate = data.conversion_rates[toCurrency];
+                    const convertedAmount = (amount * rate).toFixed(2);
+
+                    document.getElementById('result').innerText = 
+                        `${amount} ${fromCurrency} = ${convertedAmount} ${toCurrency}`;
+                } else {
+                    alert('Error fetching currency rates!');
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert('Error fetching data. Please check your API key or internet connection.');
+            }
+        }
+    </script>
+</body>
+</html>
